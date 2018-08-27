@@ -1,0 +1,7 @@
+
+
+imagedir
+
+
+mrconvert ../DICOM/DTI_64DIRS_224_GRAPPA2_0011/ sub-STSWD1117_acq-AP_dwi.mif -strides +1,2,3,4 -force -json_export sub-STSWD1117_acq-AP_dwi.json -export_grad_mrtrix sub-STSWD1117_acq-AP_dwi.b -export_grad_fsl sub-STSWD1117_acq-AP_dwi.bvecs sub-STSWD1117_acq-AP_dwi.bvals
+
