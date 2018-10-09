@@ -4,7 +4,8 @@ function importconnectomes_basicanalysis(parcnum, parcname, thr, sparsity, varar
 %Alistair Perry, UNSW (2014)
 
 %Input arguments:
-%
+%parcnum = Number of parcellation regions
+%parcname = 
 
 workingdirectory = pwd;
 files = dir(workingdirectory);
