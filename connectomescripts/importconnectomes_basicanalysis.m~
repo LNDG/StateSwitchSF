@@ -114,7 +114,7 @@ for s = 1:length(subFolders)
   
 
  % Save matrices so  network computations can follow independently at later stages
-    save([currentSubjDir '/' outdirname '/' currentSubj  '' 'metrics.mat'], 'SubjStruct');
+    save([currentSubjDir '/' outdirname '/' currentSubj  '' 'metrics.mat']);
    
     end
 %% Network computations start here
@@ -152,6 +152,7 @@ for s = 1:length(subFolders)
     %Save output
     save([currentSubjDir '/' outdirname '/' currentSubj '' 'metrics.mat'], 'SubjStruct');
 
+    end
 end
 
 end
