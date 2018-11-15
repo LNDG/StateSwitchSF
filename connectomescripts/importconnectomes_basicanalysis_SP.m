@@ -63,8 +63,8 @@ for s = 1:length(subFolders)
     invcountfile = dir(fullfile(currentSubjDir, '*invlengthweights*'));
     invcountmtx = dlmread([currentSubjDir '/' invcountfile.name]);
  
-        %Normalized by both node volume and length
-    invnodelengthfile = dir(fullfile(currentSubjDir, '*invnodelengthweights*'));
+        %Normalized by  node volume
+    invnodelengthfile = dir(fullfile(currentSubjDir, '*invnodeweights*'));
     invnodelengthmtx = dlmread([currentSubjDir '/' invnodelengthfile.name]);
   
         %Remove for now
