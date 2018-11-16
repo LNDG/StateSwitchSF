@@ -28,7 +28,7 @@ function importconnectomes_basicanalysis_SP(parcnum, thr, sparsity, varargin)
 
 %% Batch Setup
 
-cd ~/../../Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/B_data/connectomes
+cd ~/../../Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/
 
 % Find subject folders in the working directory
 workingdirectory = pwd;
@@ -91,6 +91,15 @@ for s = 1:length(subFolders)
     SubjStruct.ORG=countmtx;
     SubjStruct.ORGinv=invcountmtx;
     SubjStruct.ORGinvnodelength=invnodelengthmtx;
+
+ % Remove matrix info for cerebellum
+    SubjStruct.ORG([75 164],:)=0;
+    SubjStruct.ORG(:,[75 164])=0;
+    SubjStruct.ORGinv([75 164],:)=0;
+    SubjStruct.ORGinv(:,[75 164])=0;
+    SubjStruct.ORGinvnodelength([75 164],:)=0;
+    SubjStruct.ORGinvnodelength(:,[75 164])=0;
+
     %SubjStruct.tckdistmat=lengthmtx;
     
     %BrainMask = load_untouch_nii([currentSubjDir '/' 'biasb0brain_mask.nii']);
@@ -123,7 +132,7 @@ for s = 1:length(subFolders)
 % Can skip the thresholding steps, if already performed.
 
     load([currentSubjDir '/' outdirname '/' currentSubj  '' 'metrics.mat']);
-    
+
 % Number of fibers within matrix    
     SubjStruct.numfibers = sum(sum(SubjStruct.ORG));
 
