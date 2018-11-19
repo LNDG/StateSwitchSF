@@ -1,0 +1,39 @@
+#!/bin/bash
+# ExtractFeatMotion
+# Usage: ExtractFeatMotion BaseDir OutputDir
+
+BaseDir=$1
+OutputDir=$2
+
+cd ${BaseDir}
+
+subjs=$(find * -maxdepth 0 -type d)
+
+for i in $(echo ${subjs}); do
+
+subjid=$(echo $i)
+mkdir -p ${OutputDir}/${subjid}
+
+cd ${BaseDir}/${subjid}/preproc
+
+#find number runs
+
+cd ${BaseDir}/${subjid}/preproc
+nruns=$(find * -maxdepth 0 -type d | wc -l)
+
+echo $nruns
+
+for (( n=1; n<=${nruns}; n++ ))
+do  
+   
+rsync run-${n}/FEAT.feat/mc/prefiltered_func_data_mcf.par ${OutputDir}/${subjid}/${subjid}_sess-${n}_motion_6dof.txt
+
+rsync run-${n}/FEAT.feat/mc/prefiltered_func_data_mcf_abs_mean.rms ${OutputDir}/${subjid}/${subjid}_sess-${n}_FD_abs.txt
+
+done
+
+cat ${OutputDir}/${subjid}/${subjid}_sess-?_FD_abs.txt | awk '{ total += $1; count++ } END { print total/count }' > ${OutputDir}/${subjid}/${subjid}_avgsess_FD_abs.txt
+
+done
+
+cd ${BaseDir}
