@@ -67,12 +67,6 @@ ConTable.subjs = [];
 ConTable_local = [demogr_short ConTable_local];
 ConTable_local.subjs = [];
 
-% remove cerebellum
-ConTable_local.STR75 = [];
-ConTable_local.STR164 = [];
-ConTable_local.DEG75 = [];
-ConTable_local.DEG164 = [];
-
 cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/
 
 writetable(ConTable, 'STSWD_connectome_thr10.txt');
@@ -88,17 +82,11 @@ cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sar
 
 [global_anova,global_means] = STSWD_global_metrics(0,0)
 % set first value to ~0 for single variable outliers
-%   (gl_outliers, gl_outliers_ya, gl_outliers_oa)
-% set second value to ~0 for multivariate outliers
+% set second value to ~0 for 
 
 %% analyze LOCAL metrics, find outliers, compare age groups
-
-cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/G_Git/githubrepos/StateSwitchSF/connectomescripts
-
-[local_anova] = STSWD_local_metrics(0,0)
-% set first value to ~0 for single variable outliers
-%   (lo_outliers, lo_outliers_ya, lo_outliers_oa)
-% set second value to ~0 for multivariate outliers
+% use STSWD_local_metrics.m
+% (/Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts/analysis)
 
 %% plots 
 cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/G_Git/githubrepos/StateSwitchSF/figurescripts
@@ -122,6 +110,7 @@ bar_YAvOA('CC',savewhere,'CC_beehive','Average clustering coefficient per age gr
 bar_YAvOA('InterHemC',savewhere,'InterHemC_beehive','Interhemispheric connectivity per age group','Interhemispheric connectivity')
 bar_YAvOA('TCOMM',savewhere,'TCOMM_beehive','Communicability per age group','Communicability')
 bar_YAvOA('MAD',savewhere,'MAD_beehive','Mean anatomical distance per age group','Mean anatomical distance')
+
 
 
 

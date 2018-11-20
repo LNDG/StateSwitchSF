@@ -2,7 +2,7 @@ function [ConTable,ConTable_local,subjs] = extracttopologyinfo_SP(textfilename, 
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-cd ~/../../Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/B_data/connectomes
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes
 
 workingdirectory = pwd;
 files = dir(workingdirectory);
@@ -21,6 +21,7 @@ for s = 1:length(subjs)
     CPL(s,1) = SubjStruct.CPL; 
     EFF(s,1) = SubjStruct.EFF;
     CC(s,1)  = SubjStruct.avgCCOEFF;
+    MAD(s,1) = SubjStruct.MAD;
 
     %inter-hemispheric connectivity
     parcnum = numelements(SubjStruct.thr);
@@ -36,7 +37,7 @@ for s = 1:length(subjs)
 
 end
 
-ConTable = table(subjs, numfibers, CPL, EFF, CC, InterHemC, TCOMM);
+ConTable = table(subjs, numfibers, CPL, EFF, CC, InterHemC, TCOMM, MAD);
 
 ConTable_local = table(subjs);
 
