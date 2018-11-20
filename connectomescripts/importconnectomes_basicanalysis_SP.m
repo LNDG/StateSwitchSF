@@ -124,6 +124,9 @@ for s = 1:length(subFolders)
     
         end
         
+ % Binarize
+    SubjStruct.CIJ = weight_conversion(SubjStruct.thr, 'binarize');   
+       
  % Keep distance info only of supra-threshold connections
     SubjStruct.thrdistmat = zeros(parcnum,parcnum);
     for i = 1:parcnum
@@ -135,8 +138,6 @@ for s = 1:length(subFolders)
         end
     end           
     
- % Binarize   
-    SubjStruct.CIJ = weight_conversion(SubjStruct.thr, 'binarize');   
     
  % Save matrices so network computations can follow independently at later stages
     save([currentSubjDir '/' outdirname '/' currentSubj  '' 'metrics.mat'], 'SubjStruct');
