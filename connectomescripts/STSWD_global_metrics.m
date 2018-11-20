@@ -53,70 +53,46 @@ for i = 1:6
     end
 end
 
-clearvars i j 
 
 %% check for outliers across variables
 
 addpath(genpath('~/Desktop/MATLAB/moutlier1'));
-moutlier1(ConTable{:,[5:10]},.10) %across all 1276, 2129
-moutlier1(ConTable{(ismember(ConTable.AgeGroup,1)),[5:10]},.10) %within YA 1276
-moutlier1(ConTable{(ismember(ConTable.AgeGroup,2)),[5:10]},.10) %within OA 2149
+moutlier1(ConTable{:,[5:10]},.10) %across all 1243
+moutlier1(ConTable{(ismember(ConTable.AgeGroup,1)),[5:10]},.10) %within YA 1243
+moutlier1(ConTable{(ismember(ConTable.AgeGroup,2)),[5:10]},.10) %within OA 2149, 2226
 
 %% exclude outliers
 
-ConTable_excl = table();
-ConTable_excl = ConTable;
-ConTable_excl(ismember(ConTable_excl.ID_demogr,1276),:) = [];
-ConTable_excl(ismember(ConTable_excl.ID_demogr,2129),:) = [];
-ConTable_excl(ismember(ConTable_excl.ID_demogr,2149),:) = [];
+% ConTable_excl = table();
+% ConTable_excl = ConTable;
+% ConTable_excl(ismember(ConTable_excl.ID_demogr,1276),:) = [];
+% ConTable_excl(ismember(ConTable_excl.ID_demogr,2129),:) = [];
+% ConTable_excl(ismember(ConTable_excl.ID_demogr,2149),:) = [];
 
-%% descriptives EXCLUDE 1276, 2129 and 2149
+%% descriptives 
+global_means = table();
+global_means.metric = {'numfibers';'CPL';'EFF';'CC';'InterHemC';'TCOMM'};
 
-means_ya = table();
-means_ya.numfibers = nanmean(ConTable_excl.numfibers(ismember(ConTable_excl.AgeGroup,1)));
-means_ya.CPL = nanmean(ConTable_excl.CPL(ismember(ConTable_excl.AgeGroup,1)));
-means_ya.EFF = nanmean(ConTable_excl.EFF(ismember(ConTable_excl.AgeGroup,1)));
-means_ya.CC = nanmean(ConTable_excl.CC(ismember(ConTable_excl.AgeGroup,1)));
-means_ya.InterHemC = nanmean(ConTable_excl.InterHemC(ismember(ConTable_excl.AgeGroup,1)));
-means_ya.TCOMM = nanmean(ConTable_excl.TCOMM(ismember(ConTable_excl.AgeGroup,1)));
+for i = 1:6
+    global_means{i,2} = cell2mat(num2cell(nanmean(ConTable{(ismember(ConTable.AgeGroup,1)),i+4})));
+    global_means{i,3} = cell2mat(num2cell(nanmean(ConTable{(ismember(ConTable.AgeGroup,2)),i+4})));
+    global_means{i,4} = cell2mat(num2cell(nanstd(ConTable{(ismember(ConTable.AgeGroup,1)),i+4})));
+    global_means{i,5} = cell2mat(num2cell(nanstd(ConTable{(ismember(ConTable.AgeGroup,2)),i+4})));
+end
 
-means_oa = table();
-means_oa.numfibers = nanmean(ConTable_excl.numfibers(ismember(ConTable_excl.AgeGroup,2)));
-means_oa.CPL = nanmean(ConTable_excl.CPL(ismember(ConTable_excl.AgeGroup,2)));
-means_oa.EFF = nanmean(ConTable_excl.EFF(ismember(ConTable_excl.AgeGroup,2)));
-means_oa.CC = nanmean(ConTable_excl.CC(ismember(ConTable_excl.AgeGroup,2)));
-means_oa.InterHemC = nanmean(ConTable_excl.InterHemC(ismember(ConTable_excl.AgeGroup,2)));
-means_oa.TCOMM = nanmean(ConTable_excl.TCOMM(ismember(ConTable_excl.AgeGroup,2)));
+global_means.Properties.VariableNames = {'metric','mean_ya','mean_oa','std_ya','std_oa'};
 
-stds_ya = table();
-stds_ya.numfibers = nanstd(ConTable_excl.numfibers(ismember(ConTable_excl.AgeGroup,1)));
-stds_ya.CPL = nanstd(ConTable_excl.CPL(ismember(ConTable_excl.AgeGroup,1)));
-stds_ya.EFF = nanstd(ConTable_excl.EFF(ismember(ConTable_excl.AgeGroup,1)));
-stds_ya.CC = nanstd(ConTable_excl.CC(ismember(ConTable_excl.AgeGroup,1)));
-stds_ya.InterHemC = nanstd(ConTable_excl.InterHemC(ismember(ConTable_excl.AgeGroup,1)));
-stds_ya.TCOMM = nanstd(ConTable_excl.TCOMM(ismember(ConTable_excl.AgeGroup,1)));
-
-stds_oa = table();
-stds_oa.numfibers = nanstd(ConTable_excl.numfibers(ismember(ConTable_excl.AgeGroup,2)));
-stds_oa.CPL = nanstd(ConTable_excl.CPL(ismember(ConTable_excl.AgeGroup,2)));
-stds_oa.EFF = nanstd(ConTable_excl.EFF(ismember(ConTable_excl.AgeGroup,2)));
-stds_oa.CC = nanstd(ConTable_excl.CC(ismember(ConTable_excl.AgeGroup,2)));
-stds_oa.InterHemC = nanstd(ConTable_excl.InterHemC(ismember(ConTable_excl.AgeGroup,2)));
-stds_oa.TCOMM = nanstd(ConTable_excl.TCOMM(ismember(ConTable_excl.AgeGroup,2)));
-
-%% group comparisons EXCLUDE 1276, 2129, and 2149, control for gender
+%% group comparisons, control for gender
 
 addpath(genpath('~/Desktop/MATLAB/mancovan_496'))
-
-groupcomp_excl = struct();
 
 groupcomp_global = struct();
 
 for i = 1:6
     [groupcomp_global(i,:).T,groupcomp_global(i,:).p,...
         groupcomp_global(i,:).FANCOVAN,groupcomp_global(i,:).pANCOVAN,...
-        groupcomp_global(i,:).stats] = mancovan(ConTable_excl{:,i+4},...
-        ConTable_excl.AgeGroup,ConTable_excl.Sex); % ,{'verbose'}
+        groupcomp_global(i,:).stats] = mancovan(ConTable{:,i+4},...
+        ConTable.AgeGroup,ConTable.Sex); % ,{'verbose'}
 end
 
 %% correction for multiple comparisons
@@ -132,11 +108,18 @@ end
 
 global_anova(:,1) = table({'numfibers';'CPL';'EFF';'CC';'InterHemC';'TCOMM'});
 global_anova(:,[2 3]) = array2table(h);
-global_anova(:,[4 5]) = array2table(global_corr_p);
+for i = 1:6
+    global_anova(i,4) = array2table(groupcomp_global(i).FANCOVAN(1));
+end
+global_anova(:,[5 6]) = array2table(global_corr_p);
 
 global_anova.Properties.VariableNames = {'measure','h_group','h_sex',...
-    'p_group','p_sex'};
+    'F','p_group','p_sex'};
 
 %% clear
 
-clearvars -except ConTable ConTable_local ConTable_excl global_anova local_anova subjs
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/
+
+clearvars -except ConTable ConTable_excl ConTable_local global_anova global_means local_anova subjs
+
+save('for_beehives.mat')
