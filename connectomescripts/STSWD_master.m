@@ -21,17 +21,17 @@ addpath(genpath('~/Desktop/MATLAB/communityalg-master'));
 
 %% import connectomes
 %change to script directory
-cd ~/../../Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_Scripts/analysis
 
 % yes thresholding, set thr = 1
 % no thresholding, set thr = 0
 % first run: sparsity = 10
 % can leave varargin at default
-importconnectomes_basicanalysis_SP(164, 0, 10) 
+importconnectomes_basicanalysis_SP(164, 1, 10) 
 
 %% import demographic data
 %change to demographics directory
-cd ~/../../Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/B_Data/demographics
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/B_Data/demographics
 
 demogr_table = xlsread('Questionnaire_STSWD_NoPilot_Clean.xlsx');
 demogr_short = table(demogr_table(:,1), demogr_table(:,16),demogr_table(:,17), ...
@@ -48,7 +48,7 @@ demogr_short(ismember(demogr_short.ID_demogr,[1213,1215,1221,1227,2128,1126,...
 
 %% gather data to compare
 %change back to scripts directory
-cd ~/../../Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts/analysis 
 
 [ConTable,ConTable_local, subjs] = extracttopologyinfo_SP('ID_list.txt', 10);
 
@@ -67,22 +67,28 @@ ConTable.subjs = [];
 ConTable_local = [demogr_short ConTable_local];
 ConTable_local.subjs = [];
 
-cd ~/../../Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/B_Data
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/
 
 writetable(ConTable, 'STSWD_connectome_thr10.txt');
 writetable(ConTable_local, 'STSWD_connectome_local_thr10.txt');
 
 %% analyze GLOBAL metrics, find outliers, compare age groups
 % use STSWD_global_metrics.m
-% (/Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts/)
+% (/Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts/analysis)
 
 %% analyze LOCAL metrics, find outliers, compare age groups
 % use STSWD_local_metrics.m
-% (/Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts/)
+% (/Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts/analysis)
 
-%% plots
+%% plots 
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/A_scripts/figures 
 
-% for histogram of glbal metrics: plot_STSWD_hist_yavoa.m or
-% plot_STSWD_hist_yavoa_EXCL.m
+savewhere = ('/Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/C_Figures/global_metrics');
 
-% for bar plots of age group comparisons: plot_STSWD_bar_yavoa_EXCL.m
+% global metrics (after running STSWD_global_metrics.m)
+bar_YAvOA('numfibers',savewhere,'numfibers_beehive','Number of fibers per age group','Number of fibers')
+bar_YAvOA('CPL',savewhere,'CPL_beehive','Characteristic path length per age group','Characteristic path length')
+bar_YAvOA('EFF',savewhere,'EFF_beehive','Global efficiency per age group','Global efficiency')
+bar_YAvOA('CC',savewhere,'CC_beehive','Average clustering coefficient per age group','Average clustering coefficient')
+bar_YAvOA('InterHemC',savewhere,'InterHemC_beehive','Interhemispheric connectivity per age group','Interhemispheric connectivity')
+bar_YAvOA('TCOMM',savewhere,'TCOMM_beehive','Communicability per age group','Communicability')
