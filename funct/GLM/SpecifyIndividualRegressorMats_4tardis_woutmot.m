@@ -46,7 +46,7 @@ for indID = 1:numel(IDs)
     matlabbatch{1}.spm.stats.fmri_spec.global = 'None';
     matlabbatch{1}.spm.stats.fmri_spec.mthresh = -Inf;
     matlabbatch{1}.spm.stats.fmri_spec.mask = {''};
-    matlabbatch{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
+    matlabbatch{1}.spm.stats.fmri_spec.cvi = 'FAST';
     
     
     % subjects with different run number
@@ -153,7 +153,7 @@ for indID = 1:numel(IDs)
         matlabbatch{1}.spm.stats.fmri_spec.global = 'None';
         matlabbatch{1}.spm.stats.fmri_spec.mthresh = -Inf;
         matlabbatch{1}.spm.stats.fmri_spec.mask = {'/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Standards/GM_MNI3mm_mask.nii'};
-        matlabbatch{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
+        matlabbatch{1}.spm.stats.fmri_spec.cvi = 'FAST';
     end % session loop (i.e. runs)
     
     %% Estimate Model
