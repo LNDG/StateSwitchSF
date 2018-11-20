@@ -132,7 +132,7 @@ for indID = 1:numel(IDs)
         
         if(exist([PREPROCDIR '/' IDs{indID} '/' 'preproc' '/' 'run-' int2str(indSession) '/' 'motionout' '/' IDs{indID} '_motionout_scol.txt']))
             
-            MotConfoundFile=['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_sess-' int2str(indSession) '/' IDs{indID} '_motionout_scol.txt'];
+            MotConfoundFile=['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' 'sess-' int2str(indSession) '/' IDs{indID} '_motionout_scol.txt'];
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).multi_reg={MotConfoundFile
                 ['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_sess-' int2str(indSession) '_motion_6dof.txt']};
             
@@ -175,23 +175,23 @@ for indID = 1:numel(IDs)
         
         if(exist([PREPROCDIR '/' IDs{indID} '/' 'preproc' '/' 'run-' int2str(indSession) '/' 'motionout' '/' IDs{indID} '_motionout_scol.txt']))
             
-            ConWeights.(['Sess_' int2str(indSession) '_Con1']) = [0.25 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
+            ConWeights.(['Sess_' int2str(indSession) '_Con1']) = [0.25 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
             
-            ConWeights.(['Sess_' int2str(indSession) '_Con2']) = [0 0 0.25 0 0 0 0 0 0 0 0 0 0 0 0];
+            ConWeights.(['Sess_' int2str(indSession) '_Con2']) = [0 0 0.25 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
             
-            ConWeights.(['Sess_' int2str(indSession) '_Con3']) = [0 0 0 0 0.25 0 0 0 0 0 0 0 0 0 0];
+            ConWeights.(['Sess_' int2str(indSession) '_Con3']) = [0 0 0 0 0.25 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
             
-            ConWeights.(['Sess_' int2str(indSession) '_Con4']) = [0 0 0 0 0 0 0.25 0 0 0 0 0 0 0 0];
+            ConWeights.(['Sess_' int2str(indSession) '_Con4']) = [0 0 0 0 0 0 0.25 0 0 0 0 0 0 0 0 0 0 0 0];
             
         else
             
-            ConWeights.(['Sess_' int2str(indSession) '_Con1']) = [0.25 0 0 0 0 0 0 0 0 0 0 0 0 0];
+            ConWeights.(['Sess_' int2str(indSession) '_Con1']) = [0.25 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
             
-            ConWeights.(['Sess_' int2str(indSession) '_Con2']) = [0 0 0.25 0 0 0 0 0 0 0 0 0 0 0];
+            ConWeights.(['Sess_' int2str(indSession) '_Con2']) = [0 0 0.25 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
             
-            ConWeights.(['Sess_' int2str(indSession) '_Con3']) = [0 0 0 0 0.25 0 0 0 0 0 0 0 0 0];
+            ConWeights.(['Sess_' int2str(indSession) '_Con3']) = [0 0 0 0 0.25 0 0 0 0 0 0 0 0 0 0 0 0 0];
             
-            ConWeights.(['Sess_' int2str(indSession) '_Con4']) = [0 0 0 0 0 0 0.25 0 0 0 0 0 0 0];
+            ConWeights.(['Sess_' int2str(indSession) '_Con4']) = [0 0 0 0 0 0 0.25 0 0 0 0 0 0 0 0 0 0 0];
             
         end
         
