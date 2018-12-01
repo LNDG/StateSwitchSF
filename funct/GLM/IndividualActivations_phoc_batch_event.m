@@ -19,9 +19,9 @@ for indID = 1:numel(IDs)
     
     %load(['/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/B_data/tardis/B_data/SPM_Mixed/' IDs{indID} '/' 'SPM.mat'], 'matlabbatch');
     
-    matlabbatch{1}.spm.stats.con.spmmat = {['/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/B_data/tardis/B_data/v7219/SPM_wcueprobe_3Cue_wmask/' IDs{indID} '/' 'SPM.mat']};
+    matlabbatch{1}.spm.stats.con.spmmat = {['/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/B_data/tardis/B_data/v7219/SPM_wcueprobe_3Cue_wmask_wmot/' IDs{indID} '/' 'SPM.mat']};
     matlabbatch{1}.spm.stats.con.consess{1}.tcon.name = 'Dim 1 < Dim2-4';
-    matlabbatch{1}.spm.stats.con.consess{1}.tcon.weights = [-3 0 1 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0];
+    matlabbatch{1}.spm.stats.con.consess{1}.tcon.weights = [-3 0 1 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
     matlabbatch{1}.spm.stats.con.consess{1}.tcon.sessrep = 'replsc';
     matlabbatch{1}.spm.stats.con.delete = 0;
     
