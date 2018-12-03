@@ -1,4 +1,4 @@
-function IndividualActivations_phoc_batch_event
+function IndividualActivations_phoc_batch_event_linear
 % if running ad-hoc, be careful of contrast # (results.conspec.contasts)
 
 spm('defaults','fmri')
