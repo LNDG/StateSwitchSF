@@ -1,4 +1,4 @@
-function SpecifyIndividualRegressorMats_4tardis_woutmot_bbrICBM_PM(OUTDIR)
+function SpecifyIndividualRegressorMats_4tardis_woutmot_PM(OUTDIR)
 
 % Create SPM experimental condition info for each subject for later
 % batching with tardis
@@ -23,7 +23,7 @@ IDs = {'1117';'1118';'1120';'1124';'1125';'1126';'1131';'1132';'1135';'1136';...
     '2241';'2244';'2246';'2248';'2250';'2251';'2252';'2258';'2261'};
 
 %Path to Base Dir of local output
-pn.root = '/Volumes/LNDG/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/';
+pn.root = '/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/';
 mkdir([pn.root, 'B_data/D_batchFiles1stLevelGLM-', OUTDIR,'-tardis/']);
 %addpath([pn.root, 'T_tools/spm12/']); % add spm functions
 
@@ -78,7 +78,7 @@ for indID = 1:numel(IDs)
         
         % For the scans, we need to specify separate 3D images via comma seperator
         % Under the hood: design-specified time points are extracted from 2D voxel*time matrix
-        basefile = ['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Scans_bbrICBM/',IDs{indID},'/preproc/run-',num2str(indSession),'/',IDs{indID},'_run-',num2str(indSession),'_feat_detrended_bandpassed_FIX_2009c3mm_ANTs.nii'];
+        basefile = ['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Scans_std/',IDs{indID},'/preproc/run-',num2str(indSession),'/',IDs{indID},'_run-',num2str(indSession),'_feat_detrended_bandpassed_FIX_MNI3mm_std.nii'];
         
         allFiles={};
         if strcmp(IDs{indID}, '2132') && indSession == 2
@@ -94,28 +94,33 @@ for indID = 1:numel(IDs)
         
         matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).scans = allFiles;
         
+        PMDimDur=[];
+        PMDimOnsets=[];
+        PM=[];
+        
         % stimulus viewing condition
         indCond = 1;
         for indDim = 1:4
             
             DimOnsets = find(Regressors(:,3) == 1 & Regressors(:,4) == indDim);
             
-                        PMBlockDur=cat(1,PMBlockDur,BlockDur);
+            PMDimDur=cat(1,PMDimDur,repmat(4, numel(DimOnsets), 1));
             PMDimOnsets=cat(1,PMDimOnsets,DimOnsets);
-            PM=cat(1,PM,BlockDim,BlockDim);
             
-            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).name = ['StimOnset_dim',num2str(indDim)];
-            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).onset =  % IMPORTANT: SPM starts counting at 0
-            onsets = matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(indCond).onset;
+            PM=cat(1,PM,repmat(indDim, numel(DimOnsets), 1));
+            
+            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).name = 'StimOnset';
+            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).onset = PMDimOnsets; 
+            %onsets = matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(indCond).onset;
             %matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(indCond).duration = repmat(1, numel(onsets), 1); clear onsets; % duration of 1 (VarToolbox) vs 0 (SPM convention)
-            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).duration = repmat(4, numel(onsets), 1);
+            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).duration = PMDimDur;
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).tmod = 0;
-            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).pmod.name = 'Cue Load';
+            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).pmod.name = 'Stim Load';
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).pmod.param = PM;
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).pmod.poly = 1;
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).orth = 1;
-            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).orth = 0;
-            indCond = indCond + 1;
+            
+            %indCond = indCond + 1;
         end
         
         % add cue regressor
@@ -154,7 +159,7 @@ for indID = 1:numel(IDs)
         matlabbatch{1}.spm.stats.fmri_spec.volt = 1;
         matlabbatch{1}.spm.stats.fmri_spec.global = 'None';
         matlabbatch{1}.spm.stats.fmri_spec.mthresh = -Inf;
-        matlabbatch{1}.spm.stats.fmri_spec.mask = {'/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Standards/mni_icbm152_gm_tal_nlin_sym_09c_thr025.nii'};
+        matlabbatch{1}.spm.stats.fmri_spec.mask = {'/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Standards/GM_MNI3mm_mask.nii'};
         matlabbatch{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
     end % session loop (i.e. runs)
     
@@ -169,21 +174,25 @@ for indID = 1:numel(IDs)
     
     % With only one HRF derivative
         
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Dim 1';
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'replsc';
-    
-    matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'Dim 2';
-    matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
-    matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'replsc';
+     matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Stimulus Condition';
+     matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
+     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'replsc';
 
-    matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'Dim 3';
-    matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
-    matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'replsc';
-    
-    matlabbatch{3}.spm.stats.con.consess{4}.tcon.name = 'Dim 4';
-    matlabbatch{3}.spm.stats.con.consess{4}.tcon.weights = [0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
-    matlabbatch{3}.spm.stats.con.consess{4}.tcon.sessrep = 'replsc';
+     matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'Load PM 1';
+     matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+     matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'replsc';
+
+%      matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'Load PM 2';
+%      matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+%      matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'replsc';
+% 
+%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'Dim 3';
+%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
+%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'replsc';
+%     
+%     matlabbatch{3}.spm.stats.con.consess{4}.tcon.name = 'Dim 4';
+%     matlabbatch{3}.spm.stats.con.consess{4}.tcon.weights = [0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+%     matlabbatch{3}.spm.stats.con.consess{4}.tcon.sessrep = 'replsc';
     
     
     %     matlabbatch{4}.spm.stats.results.spmmat = cfg_dep('fMRI Results Report: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));

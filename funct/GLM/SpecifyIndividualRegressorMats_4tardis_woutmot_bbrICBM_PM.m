@@ -109,7 +109,7 @@ for indID = 1:numel(IDs)
             
             PM=cat(1,PM,repmat(indDim, numel(DimOnsets), 1));
             
-            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).name = ['StimOnset_dim',num2str(indDim)];
+            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).name = 'StimOnset';
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).onset = PMDimOnsets; 
             %onsets = matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(indCond).onset;
             %matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(indCond).duration = repmat(1, numel(onsets), 1); clear onsets; % duration of 1 (VarToolbox) vs 0 (SPM convention)
@@ -117,9 +117,8 @@ for indID = 1:numel(IDs)
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).tmod = 0;
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).pmod.name = 'Stim Load';
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).pmod.param = PM;
-            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).pmod.poly = 1;
+            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).pmod.poly = 2;
             matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).orth = 1;
-            matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).cond(1).orth = 0;
             
             %indCond = indCond + 1;
         end
@@ -176,12 +175,16 @@ for indID = 1:numel(IDs)
     % With only one HRF derivative
         
      matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Stimulus Condition';
-     matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
+     matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
      matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'replsc';
-%     
-     matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'Load PM';
-     matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+
+     matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'Load PM 1';
+     matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
      matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'replsc';
+
+     matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'Load PM 2';
+     matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+     matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'replsc';
 % 
 %     matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'Dim 3';
 %     matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];

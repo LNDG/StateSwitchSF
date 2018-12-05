@@ -4,11 +4,7 @@ nclusters=length(SPM.ResidualMS);
 clusters=struct;
 for i = 1:92
     for j = 1:nclusters
-        if i == 1
-            clusters.(['c' int2str(j)])(1,1:4)=SPM.marsY.Y(1:4,j);
-        else
-            clusters.(['c' int2str(j)])(i,1:4)=SPM.marsY.Y([i-1]*4+1:[i-1]*4+4,j);
-        end
+            clusters.(['c' int2str(j)])(i,1)=SPM.marsY.Y(i,j);
     end
 end
 
@@ -40,14 +36,30 @@ for j = 1:nclusters
     bar(1 - 0.25,mean(clusters.(['c' int2str(j)])(1:nYA,1)),0.4,'FaceColor','k');
     bar(1 + 0.25,mean(clusters.(['c' int2str(j)])(nYA+1:nsubjs,1)),0.4,'FaceColor','r');
     
-    bar(2 - 0.25,mean(clusters.(['c' int2str(j)])(1:nYA,2)),0.4,'FaceColor','k');
-    bar(2 + 0.25,mean(clusters.(['c' int2str(j)])(nYA+1:nsubjs,2)),0.4,'FaceColor','r');
+%     bar(2 - 0.25,mean(clusters.(['c' int2str(j)])(1:nYA,2)),0.4,'FaceColor','k');
+%     bar(2 + 0.25,mean(clusters.(['c' int2str(j)])(nYA+1:nsubjs,2)),0.4,'FaceColor','r');
     
-    bar(3 - 0.25,mean(clusters.(['c' int2str(j)])(1:nYA,3)),0.4,'FaceColor','k');
-    bar(3 + 0.25,mean(clusters.(['c' int2str(j)])(nYA+1:nsubjs,3)),0.4,'FaceColor','r');
+    cstringremun=strrep(SPM.marsY.regions{1,j}.name,'_',' ');
+    cstringfinal=strrep(cstringremun,'Load Effect','');
+    title(cstringfinal)
     
-    bar(4 - 0.25,mean(clusters.(['c' int2str(j)])(1:nYA,4)),0.4,'FaceColor','k');
-    bar(4 + 0.25,mean(clusters.(['c' int2str(j)])(nYA+1:nsubjs,4)),0.4,'FaceColor','r');
+end
+
+grpIDs(1:nYA,1)=1;
+grpIDs(nYA+1:nYA+nOA)=2;
+
+%%Distribution plots
+
+for j = 1:nclusters
+    
+    figure(4),subplot(3,2,j)
+    
+    hold on
+    
+    plotSpread_incmarkersz(clusters.(['c' int2str(j)]),'distributionIdx',grpIDs,'distributionColors',{'black','red'});
+    
+%     bar(2 - 0.25,mean(clusters.(['c' int2str(j)])(1:nYA,2)),0.4,'FaceColor','k');
+%     bar(2 + 0.25,mean(clusters.(['c' int2str(j)])(nYA+1:nsubjs,2)),0.4,'FaceColor','r');
     
     cstringremun=strrep(SPM.marsY.regions{1,j}.name,'_',' ');
     cstringfinal=strrep(cstringremun,'Load Effect','');
