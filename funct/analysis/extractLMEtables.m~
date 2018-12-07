@@ -1,0 +1,18 @@
+function extractLMEtables
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+
+
+for i = 1:92
+if i == 1
+dataext(
+dataext(i*1:4,3)=RTs_dimmean(i,:);
+
+else
+dataext(i*4:4*[i+1]-1,3)=RTs_dimmean(i,:);
+end
+end
+
+
+end
+
