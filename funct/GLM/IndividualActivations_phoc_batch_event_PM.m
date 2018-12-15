@@ -19,7 +19,7 @@ for indID = 1:numel(IDs)
     
     %load(['/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/B_data/tardis/B_data/SPM_Mixed/' IDs{indID} '/' 'SPM.mat'], 'matlabbatch');
     
-    matlabbatch{1}.spm.stats.results.spmmat = {['/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/B_data/tardis/B_data/v7219/SPM_wcueprobe_3Cue_wmask_wmot_PM/' IDs{indID} '/' 'SPM.mat']};
+    matlabbatch{1}.spm.stats.results.spmmat = {['/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/B_data/tardis/B_data/v7219/SPM_wcueprobe_3Cue_wmask_wmot_std_PM/' IDs{indID} '/' 'SPM.mat']};
     matlabbatch{1}.spm.stats.results.conspec.titlestr = '';
     matlabbatch{1}.spm.stats.results.conspec.contrasts = 2;
     matlabbatch{1}.spm.stats.results.conspec.threshdesc = 'none';

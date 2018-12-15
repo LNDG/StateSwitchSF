@@ -1,0 +1,36 @@
+function [allcoords, coordparcmatch] = coords_parcmatch(coordlist, parcnii, parcname)
+%UNTITLED4 Summary of this function goes here
+%   Detailed explanation goes here
+
+[parcnii] = load_untouch_nii(parcnii);
+parcmatchdata = zeros(size(parcnii.img));
+nparcs = max(max(max(parcmatchdata)));
+
+mnicoords=dlmread(coordlist);
+ncoords=length(mnicoords(:,1));
+
+Tform = cat(1, parchdr.hist.srow_x, parchdr.hist.srow_y, parchdr.hist.srow_z, [0 0 0 1]); 
+
+for i = 1:ncoords
+        
+coord = [mnicoords(i,1) mnicoords(i,2) mnicoords(i,3) ones(size(mnicoords(1,:),1),1)]*(inv(Tform))';
+coord(:,4) = [];
+coord = round(coord);
+
+allcoords(i,:)=coord;
+
+coordparcmatch(i,1)=parcnii.img(allcoords(i,1),allcoords(i,2),allcoords(i,3));
+
+if coordparcmatch(i,1)~=0
+
+parcmatchdata(parcnii.img==coordparcmatch(i,1))=coordparcmatch(i,1);
+
+end
+
+end
+
+%write out parc match nii
+
+write(parchdr,parcmatchdata,['sigcoords_' parcname 'parcmatch.nii'])
+
+end
