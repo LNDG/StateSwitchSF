@@ -1,4 +1,4 @@
-function extractLMEtables(behav, behavname)
+function LMEtable = extractLMEtables(behav, behavname)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 

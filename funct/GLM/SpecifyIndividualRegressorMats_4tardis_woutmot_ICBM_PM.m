@@ -181,6 +181,13 @@ for indID = 1:numel(IDs)
      matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'Load PM 1';
      matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
      matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'replsc';
+     
+     %Sensory and load effects - for extracting DCM time series
+     
+     matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'Stimulus and Load PM 1';
+     matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [1 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+     matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'replsc';
+     
 
 %      matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'Load PM 2';
 %      matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
