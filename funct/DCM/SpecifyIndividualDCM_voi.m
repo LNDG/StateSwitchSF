@@ -39,7 +39,7 @@ for indID = 1:numel(allIDs)
             
             matlabbatch{iRoi}.spm.util.voi.spmmat = {[DATADIR '/' allIDs{indID} '/SPM.mat']};
             % adjust for effects of interest: Try second contrast for now..
-            matlabbatch{iRoi}.spm.util.voi.adjust = 2;
+            matlabbatch{iRoi}.spm.util.voi.adjust = 4; %add in F contrast
             matlabbatch{iRoi}.spm.util.voi.session = indSession;
             matlabbatch{iRoi}.spm.util.voi.name = sigclustnames{iRoi};
             matlabbatch{iRoi}.spm.util.voi.roi{1}.sphere.centre = roicoords{iRoi};

@@ -188,7 +188,15 @@ for indID = 1:numel(IDs)
      matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [1 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
      matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'replsc';
      
-
+     %F-statistic - again for extracting time series
+     
+    matlabbatch{3}.spm.stats.con.consess{4}.fcon.name = 'All effects';
+    matlabbatch{3}.spm.stats.con.consess{4}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+        0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+        0 0 0 0 0 0 1 0 0 0 0 0 0 0 0];
+    matlabbatch{3}.spm.stats.con.consess{4}.fcon.sessrep = 'repl';
+     
 %      matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'Load PM 2';
 %      matlabbatch{3}.spm.stats.con.consess{3}.tcon.weights = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
 %      matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'replsc';
