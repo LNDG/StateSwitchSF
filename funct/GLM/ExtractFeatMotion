@@ -34,6 +34,8 @@ done
 
 cat ${OutputDir}/${subjid}/${subjid}_sess-?_FD_abs.txt | awk '{ total += $1; count++ } END { print total/count }' > ${OutputDir}/${subjid}/${subjid}_avgsess_FD_abs.txt
 
+cat ${OutputDir}/${subjid}/${subjid}_sess-?_motion_6dof.txt > ${OutputDir}/${subjid}/${subjid}_motion_6dof_all.txt
+
 done
 
 cd ${BaseDir}
