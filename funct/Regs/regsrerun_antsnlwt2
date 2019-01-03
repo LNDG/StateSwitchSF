@@ -14,19 +14,19 @@ cd ${WORKDIR}/${subj}/preproc/nlregs
 
 #Keep strides consistent with temp and funct images, using MRtrix
 
-mrconvert ${WORKDIR}/T1/${subj}/${subjid}_t1_ANTs_brain.nii.gz ${subjid}_t1_ANTs_brain_str.nii.gz -stride -1,2,3 -force -nthreads 1
+mrconvert ${WORKDIR}/${subj}/mri/t1/${subj}_t1_ANTs_brain.nii.gz ${subj}_t1_ANTs_brain_str.nii.gz -stride -1,2,3 -force -nthreads 1
 
-mrconvert ${WORKDIR}/T1/${subj}/${subjid}_t2_ANTs_brain.nii.gz ${subjid}_t2_ANTs_brain_str.nii.gz -stride -1,2,3 -force -nthreads 1
+mrconvert ${WORKDIR}/${subj}/mri/t2/${subj}_t2_ANTs_brain.nii.gz ${subj}_t2_ANTs_brain_str.nii.gz -stride -1,2,3 -force -nthreads 1
 
 
 #setup T2w to T1w registration using 6 DOF
 
-antsRegistration --verbose 1 --dimensionality 3 --float 0 --collapse-output-transforms 1 --output [${subjid}_t2_in_t1,${subjid}_t2_in_t1_Warped.nii.gz,${subjid}_t2_in_t1_InverseWarped.nii.gz] --interpolation Linear --use-histogram-matching 0 --winsorize-image-intensities [0.005,0.995] --initial-moving-transform [${subjid}_t1_ANTs_brain_str.nii.gz,${subjid}_t2_ANTs_brain_str.nii.gz,1] --transform Rigid[0.1] --metric MI[${subjid}_t1_ANTs_brain_str.nii.gz,${subjid}_t2_ANTs_brain_str.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
+antsRegistration --verbose 1 --dimensionality 3 --float 0 --collapse-output-transforms 1 --output [${subj}_t2_in_t1,${subj}_t2_in_t1_Warped.nii.gz,${subj}_t2_in_t1_InverseWarped.nii.gz] --interpolation Linear --use-histogram-matching 0 --winsorize-image-intensities [0.005,0.995] --initial-moving-transform [${subj}_t1_ANTs_brain_str.nii.gz,${subj}_t2_ANTs_brain_str.nii.gz,1] --transform Rigid[0.1] --metric MI[${subj}_t1_ANTs_brain_str.nii.gz,${subj}_t2_ANTs_brain_str.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
 
 
 #setup structural (T1w) normalization to template space, using non-linear registration
 
-antsRegistration --verbose 1 --dimensionality 3 --float 0 --collapse-output-transforms 1 --output [${subjid}_t1_ANTs_in_${TEMPpre},${subjid}_t1_ANTs_in_${TEMPpre}_Warped.nii.gz,${subjid}_t1_ANTs_in_${TEMPpre}_InverseWarped.nii.gz] --interpolation Linear --use-histogram-matching 0 --winsorize-image-intensities [0.005,0.995] --initial-moving-transform [${TEMPimage},${subjid}_t1_ANTs_brain_str.nii.gz,1] --transform Rigid[0.1] --metric MI[${TEMPimage},${subjid}_t1_ANTs_brain_str.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox --transform Affine[0.1] --metric MI[${TEMPimage},${subjid}_t1_ANTs_brain_str.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox --transform SyN[0.1,3,0] --metric CC[${TEMPimage},${subjid}_t1_ANTs_brain_str.nii.gz,1,4] --convergence [100x70x50x20,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
+antsRegistration --verbose 1 --dimensionality 3 --float 0 --collapse-output-transforms 1 --output [${subj}_t1_ANTs_in_${TEMPpre},${subj}_t1_ANTs_in_${TEMPpre}_Warped.nii.gz,${subj}_t1_ANTs_in_${TEMPpre}_InverseWarped.nii.gz] --interpolation Linear --use-histogram-matching 0 --winsorize-image-intensities [0.005,0.995] --initial-moving-transform [${TEMPimage},${subj}_t1_ANTs_brain_str.nii.gz,1] --transform Rigid[0.1] --metric MI[${TEMPimage},${subj}_t1_ANTs_brain_str.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox --transform Affine[0.1] --metric MI[${TEMPimage},${subj}_t1_ANTs_brain_str.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox --transform SyN[0.1,3,0] --metric CC[${TEMPimage},${subj}_t1_ANTs_brain_str.nii.gz,1,4] --convergence [100x70x50x20,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
 
 
 #now normalization of each functional run, via the T2w image
@@ -48,14 +48,14 @@ fslmaths ${WORKDIR}/${subj}/preproc/run-${j}/FEAT.feat/example_func.nii.gz -mas 
 #first, co-registration to the T2w image
 
 
-antsRegistration --verbose 1 --dimensionality 3 --float 0 --collapse-output-transforms 1 --output [${subjid}_meanfunc_in_t2_to_t1,${subjid}_meanfunc_in_t2_to_t1_Warped.nii.gz,${subjid}_meanfunc_in_t2_to_t1_InverseWarped.nii.gz] --interpolation Linear --use-histogram-matching 0 --winsorize-image-intensities [0.005,0.995] --initial-moving-transform [${WORKDIR}/${subj}/preproc/nlregs/${subjid}_t2_in_t1_Warped.nii.gz,example_func_masked.nii.gz,1] --transform Rigid[0.1] --metric MI[${WORKDIR}/${subj}/preproc/nlregs/${subjid}_t2_in_t1_Warped.nii.gz,example_func_masked.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
+antsRegistration --verbose 1 --dimensionality 3 --float 0 --collapse-output-transforms 1 --output [${subj}_meanfunc_in_t2_to_t1,${subj}_meanfunc_in_t2_to_t1_Warped.nii.gz,${subj}_meanfunc_in_t2_to_t1_InverseWarped.nii.gz] --interpolation Linear --use-histogram-matching 0 --winsorize-image-intensities [0.005,0.995] --initial-moving-transform [${WORKDIR}/${subj}/preproc/nlregs/${subj}_t2_in_t1_Warped.nii.gz,example_func_masked.nii.gz,1] --transform Rigid[0.1] --metric MI[${WORKDIR}/${subj}/preproc/nlregs/${subj}_t2_in_t1_Warped.nii.gz,example_func_masked.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
 
 
 #apply transformation of each funct vol to template space
 
 #split timeseries into 3D images
 
-nvols=$(fslnvols ${WORKDIR}/FEAT/${subjid}/run-${j}/${subjid}_run-${j}_feat_detrended_bandpassed_FIX.nii.gz)
+nvols=$(fslnvols ${WORKDIR}/FEAT/${subj}/run-${j}/${subj}_run-${j}_feat_detrended_bandpassed_FIX.nii.gz)
 
 
 mkdir tmp
@@ -64,7 +64,7 @@ cd tmp
 
 niters=`expr $nvols - 1`
 
-fslsplit ${WORKDIR}/${subj}/preproc/run-${j}/${subjid}_run-${j}_feat_detrended_bandpassed_FIX.nii.gz tmp
+fslsplit ${WORKDIR}/${subj}/preproc/run-${j}/${subj}_run-${j}_feat_detrended_bandpassed_FIX.nii.gz tmp
 
 
 #apply transform to each volume
@@ -72,7 +72,7 @@ fslsplit ${WORKDIR}/${subj}/preproc/run-${j}/${subjid}_run-${j}_feat_detrended_b
 for k in $(seq 0 1 $niters) 
 do
 
-antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i tmp`zeropad $k 4`.nii.gz -t ${WORKDIR}/${subj}/preproc/nlregs/run-${j}/${subjid}_meanfunc_in_t2_to_t1.mat -t ${WORKDIR}/${subj}/preproc/nlregs/${subjid}_t1_ANTs_in_${TEMPpre}.mat -o out`zeropad $k 4`.nii.gz
+antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i tmp`zeropad $k 4`.nii.gz -t ${WORKDIR}/${subj}/preproc/nlregs/run-${j}/${subj}_meanfunc_in_t2_to_t1.mat -t ${WORKDIR}/${subj}/preproc/nlregs/${subj}_t1_ANTs_in_${TEMPpre}.mat -o out`zeropad $k 4`.nii.gz
 
 done
 
@@ -80,21 +80,21 @@ rm tmp????.nii.gz
 
 #and merge back into 4D image
 
-fslmerge -t ${subjid}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii.gz *out*
+fslmerge -t ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii.gz *out*
 
 rm *out*
 
 
-gunzip ${subjid}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii.gz
+gunzip ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii.gz
 
-mv ${subjid}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii ${WORKDIR}/${subj}/preproc/run-${j}/
+mv ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii ${WORKDIR}/${subj}/preproc/run-${j}/
 
 cd ${WORKDIR}/${subj}/preproc/nlregs/run-${j}/
 
 
 #sanity checking of functional normalization
 
-antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i example_func_masked.nii.gz -t ${subjid}_meanfunc_in_t2_to_t1.mat -t ${WORKDIR}/${subj}/preproc/nlregs/${subjid}_t1_ANTs_in_${TEMPpre}.mat -o ${subj}_example_func_in_${TEMPpre}.nii.gz
+antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i example_func_masked.nii.gz -t ${subj}_meanfunc_in_t2_to_t1.mat -t ${WORKDIR}/${subj}/preproc/nlregs/${subj}_t1_ANTs_in_${TEMPpre}.mat -o ${subj}_example_func_in_${TEMPpre}.nii.gz
 
 
 #run finished, lets go back
