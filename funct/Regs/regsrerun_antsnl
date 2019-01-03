@@ -1,0 +1,86 @@
+#!/bin/bash
+
+subj=$1
+WORKDIR=$2
+
+TEMPimage=$3
+TEMPimage_lowres=$4
+
+SUBJECTS_DIR=${WORKDIR}/FS
+
+subjid=`echo "${subj}" | cut -c 10-13`
+
+mkdir -p ${WORKDIR}/procdir/${subj}/
+
+cd ${WORKDIR}/procdir/${subj}/
+
+
+#setup non-linear registrations for structural to template space
+
+mrconvert ${WORKDIR}/T1/${subj}/${subjid}_t1_ANTs_brain.nii.gz ${subjid}_t1_ANTs_brain_str.nii.gz -stride -1,2,3 -force -nthreads 1
+
+antsRegistration --verbose 1 --dimensionality 3 --float 0 --collapse-output-transforms 1 --output [antsbrainintemp,antsbrainintempWarped.nii.gz,antsbrainintempInverseWarped.nii.gz] --interpolation Linear --use-histogram-matching 0 --winsorize-image-intensities [0.005,0.995] --initial-moving-transform [${TEMPimage},${subjid}_t1_ANTs_brain_str.nii.gz,1] --transform Rigid[0.1] --metric MI[${TEMPimage},${subjid}_t1_ANTs_brain_str.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox --transform Affine[0.1] --metric MI[${TEMPimage},${subjid}_t1_ANTs_brain_str.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox --transform SyN[0.1,3,0] --metric CC[${TEMPimage},${subjid}_t1_ANTs_brain_str.nii.gz,1,4] --convergence [100x70x50x20,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
+
+#c3d_affine_tool -ref antsbrainintempWarped.nii.gz -src ${subjid}_t1_ANTs_brain_str.nii.gz -itk antsbrainintemp0GenericAffine.mat -ras2fsl -o antsbrainintemp-fsl.mat
+
+#convert_xfm -omat antsbrainintemp-fsl_rev.mat -inverse antsbrainintemp-fsl.mat
+
+
+#now co-registrations of each run
+
+for j in $(seq 1 1 4)
+
+do
+
+mkdir -p ${WORKDIR}/procdir/${subj}/run-${j}/
+
+cd ${WORKDIR}/procdir/${subj}/run-${j}/
+
+fslmaths ${WORKDIR}/FEAT/${subjid}/run-${j}/FEAT.feat/example_func.nii.gz -mas ${WORKDIR}/FEAT/${subjid}/run-${j}/FEAT.feat/mask.nii.gz example_func_masked
+
+#flirt -ref ${WORKDIR}/procdir/${subj}/${subjid}_t1_ANTs_brain_str.nii.gz -in example_func_masked.nii.gz -omat epi2ANTsBET_dof6.mat -out epi2ANTsBET_dof6 -dof 6
+
+#convert_xfm -omat epi2temp.mat -concat epi2ANTsBET_dof6.mat ${WORKDIR}/procdir/${subj}/antsbrainintemp-fsl.mat
+
+antsRegistration --verbose 1 --dimensionality 3 --float 0 --collapse-output-transforms 1 --output [meanfuncinants,meanfuncinantsWarped.nii.gz,meanfuncinantsInverseWarped.nii.gz] --interpolation Linear --use-histogram-matching 0 --winsorize-image-intensities [0.005,0.995] --initial-moving-transform [${WORKDIR}/procdir/${subj}/${subjid}_t1_ANTs_brain_str.nii.gz,example_func_masked.nii.gz,1] --transform Rigid[0.1] --metric MI[${WORKDIR}/procdir/${subj}/${subjid}_t1_ANTs_brain_str.nii.gz,example_func_masked.nii.gz,1,32,Regular,0.25] --convergence [1000x500x250x100,1e-6,10] --shrink-factors 8x4x2x1 --smoothing-sigmas 3x2x1x0vox
+
+nvols=$(fslnvols ${WORKDIR}/FEAT/${subjid}/run-${j}/${subjid}_run-${j}_feat_detrended_bandpassed_FIX.nii.gz)
+
+mkdir tmp
+
+cd tmp
+
+niters=`expr $nvols - 1`
+
+fslsplit ${WORKDIR}/FEAT/${subjid}/run-${j}/${subjid}_run-${j}_feat_detrended_bandpassed_FIX.nii.gz tmp
+
+for k in $(seq 0 1 $niters) 
+do
+
+antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i tmp`zeropad $k 4`.nii.gz -t ${WORKDIR}/procdir/${subj}/run-${j}/meanfuncinants0GenericAffine.mat -t ${WORKDIR}/procdir/${subj}/antsbrainintemp0GenericAffine.mat -o out`zeropad $k 4`.nii.gz
+
+#flirt -in ${WORKDIR}/FEAT/${subjid}/run-${j}/${subjid}_run-${j}_feat_detrended_bandpassed_FIX.nii.gz -ref ${TEMPimage_lowres} -applyxfm -init epi2temp.mat -out ${subjid}_run-${j}_feat_detrended_bandpassed_FIX_2009c3mm.nii.gz
+
+done
+
+rm tmp????.nii.gz
+
+fslmerge -t ${subjid}_run-${j}_feat_detrended_bandpassed_FIX_2009c3mm.nii.gz *out*
+
+rm *out*
+
+mv ${subjid}_run-${j}_feat_detrended_bandpassed_FIX_2009c3mm.nii.gz ${WORKDIR}/procdir/${subj}/run-${j}/
+
+cd ${WORKDIR}/procdir/${subj}/run-${j}/
+
+#sanity checking transform of example_func
+
+antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i example_func_masked.nii.gz -t ${WORKDIR}/procdir/${subj}/run-${j}/meanfuncinants0GenericAffine.mat -t ${WORKDIR}/procdir/${subj}/antsbrainintemp0GenericAffine.mat -o example_func_in2009c.nii.gz
+
+rm -rf tmp
+
+#go back now
+
+cd ${WORKDIR}/procdir/${subj}/
+
+done
