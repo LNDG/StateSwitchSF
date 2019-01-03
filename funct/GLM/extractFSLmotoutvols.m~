@@ -39,10 +39,11 @@ for s = 1:length(subFolders)
             
         end
         
-            dlmwrite([currentSubjDir '/' 'preproc' '/' currentSubj '_motionout_scol_all.txt'], motrowbinall, 'delimiter', '\t');
+            dlmwrite([currentSubjRunDir '/' 'motionout' '/' currentSubj '_motionout_scol.txt'], motrowbin, 'delimiter', '\t');
         
     end
     
 end
 
 end
+

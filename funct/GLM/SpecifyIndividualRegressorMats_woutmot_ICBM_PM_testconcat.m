@@ -1,4 +1,4 @@
-function SpecifyIndividualRegressorMats_4tardis_woutmot_ICBM_PM(OUTDIR)
+function SpecifyIndividualRegressorMats_woutmot_ICBM_PM_testconcat(OUTDIR)
 
 % Create SPM experimental condition info for each subject for later
 % batching with tardis
@@ -24,7 +24,7 @@ IDs = {'1117';'1118';'1120';'1124';'1125';'1126';'1131';'1132';'1135';'1136';...
 
 %Path to Base Dir of local output
 pn.root = '/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/';
-mkdir([pn.root, 'B_data/D_batchFiles1stLevelGLM-', OUTDIR,'-tardis/']);
+mkdir([pn.root, 'B_data/D_batchFiles1stLevelGLM-', OUTDIR]);
 %addpath([pn.root, 'T_tools/spm12/']); % add spm functions
 
 for indID = 1:numel(IDs)
@@ -35,7 +35,7 @@ for indID = 1:numel(IDs)
     
     % specify general parameters
     
-    matlabbatch{1}.spm.stats.fmri_spec.dir = {['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/SPMfiles/SPM_' OUTDIR '/' IDs{indID} '/']};
+    matlabbatch{1}.spm.stats.fmri_spec.dir = {['/Volumes/LNDG/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/B_data/A_SPMfiles/' IDs{indID} '/']};
     matlabbatch{1}.spm.stats.fmri_spec.timing.units = 'scans';
     matlabbatch{1}.spm.stats.fmri_spec.timing.RT = 0.645;
     matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t = 16;
@@ -78,7 +78,7 @@ for indID = 1:numel(IDs)
         
         % For the scans, we need to specify separate 3D images via comma seperator
         % Under the hood: design-specified time points are extracted from 2D voxel*time matrix
-        basefile = ['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Scans_ICBM/',IDs{indID},'/preproc/run-',num2str(indSession),'/',IDs{indID},'_run-',num2str(indSession),'_feat_detrended_bandpassed_FIX_2009c3mm.nii'];
+        basefile = ['/Volumes/LNDG/Projects/StateSwitch/dynamic/data/mri/task/analyses/B_PLS/B_data/BOLDin/',IDs{indID},'_run-',num2str(indSession),'_feat_detrended_bandpassed_FIX_MNI3mm.nii'];
         
         allFiles={};
         if strcmp(IDs{indID}, '2132') && indSession == 2
@@ -145,10 +145,10 @@ for indID = 1:numel(IDs)
         %% add regressors
         
         
-        MotConfoundFile=['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' 'sess-' int2str(indSession) '/' IDs{indID} '_motionout_scol.txt'];
-        matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).multi_reg={MotConfoundFile
-            ['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_sess-' int2str(indSession) '_motion_6dof.txt']};
-        
+%         MotConfoundFile=['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' 'sess-' int2str(indSession) '/' IDs{indID} '_motionout_scol.txt'];
+%         matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).multi_reg={MotConfoundFile
+%             ['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_sess-' int2str(indSession) '_motion_6dof.txt']};
+%         
         
         %% add general session information
         matlabbatch{1}.spm.stats.fmri_spec.sess(indSession).multi = {''};
@@ -159,43 +159,43 @@ for indID = 1:numel(IDs)
         matlabbatch{1}.spm.stats.fmri_spec.volt = 1;
         matlabbatch{1}.spm.stats.fmri_spec.global = 'None';
         matlabbatch{1}.spm.stats.fmri_spec.mthresh = -Inf;
-        matlabbatch{1}.spm.stats.fmri_spec.mask = {'/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Standards/mni_icbm152_gm_tal_nlin_sym_09c_thr025.nii'};
+        %matlabbatch{1}.spm.stats.fmri_spec.mask = {'/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Standards/mni_icbm152_gm_tal_nlin_sym_09c_thr025.nii'};
         matlabbatch{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
     end % session loop (i.e. runs)
     
-    %% Estimate Model
-    
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1) = cfg_dep('fMRI model specification: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
-    matlabbatch{2}.spm.stats.fmri_est.write_residuals = 0;
-    matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
-    
-    %% Now contrasts: Simple Contrast Effects (for now)
-    matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep('fMRI Contrast Manager: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
-    
-    % With only one HRF derivative
-        
-     matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Stimulus Condition';
-     matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
-     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'replsc';
-
-     matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'Load PM 1';
-     matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
-     matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'replsc';
-     
-     %Sensory and load effects - for extracting DCM time series
-     
-     matlabbatch{3}.spm.stats.con.consess{3}.fcon.name = 'Stimulus and Load PM 1 F';
-     matlabbatch{3}.spm.stats.con.consess{3}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-         0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
-     matlabbatch{3}.spm.stats.con.consess{3}.fcon.sessrep = 'repl';
-     
-     matlabbatch{3}.spm.stats.con.consess{4}.fcon.name = 'Stimulus and Load PM 1 F - w time derivs';
-     matlabbatch{3}.spm.stats.con.consess{4}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-         0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
-         0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
-         0 0 0 1 0 0 0 0 0 0 0 0 0 0 0];
-     matlabbatch{3}.spm.stats.con.consess{4}.fcon.sessrep = 'repl';
-     
+%     %% Estimate Model
+%     
+%     matlabbatch{2}.spm.stats.fmri_est.spmmat(1) = cfg_dep('fMRI model specification: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+%     matlabbatch{2}.spm.stats.fmri_est.write_residuals = 0;
+%     matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
+%     
+%     %% Now contrasts: Simple Contrast Effects (for now)
+%     matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep('fMRI Contrast Manager: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+%     
+%     % With only one HRF derivative
+%         
+%      matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'Stimulus Condition';
+%      matlabbatch{3}.spm.stats.con.consess{1}.tcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
+%      matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'replsc';
+% 
+%      matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'Load PM 1';
+%      matlabbatch{3}.spm.stats.con.consess{2}.tcon.weights = [0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+%      matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'replsc';
+%      
+%      %Sensory and load effects - for extracting DCM time series
+%      
+%      matlabbatch{3}.spm.stats.con.consess{3}.fcon.name = 'Stimulus and Load PM 1 F';
+%      matlabbatch{3}.spm.stats.con.consess{3}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+%          0 0 1 0 0 0 0 0 0 0 0 0 0 0 0];
+%      matlabbatch{3}.spm.stats.con.consess{3}.fcon.sessrep = 'repl';
+%      
+%      matlabbatch{3}.spm.stats.con.consess{4}.fcon.name = 'Stimulus and Load PM 1 F - w time derivs';
+%      matlabbatch{3}.spm.stats.con.consess{4}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+%          0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+%          0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+%          0 0 0 1 0 0 0 0 0 0 0 0 0 0 0];
+%      matlabbatch{3}.spm.stats.con.consess{4}.fcon.sessrep = 'repl';
+%      
      %F-statistic - again for extracting time series
      
 %     matlabbatch{3}.spm.stats.con.consess{4}.fcon.name = 'All effects';
@@ -229,7 +229,7 @@ for indID = 1:numel(IDs)
     %     matlabbatch{4}.spm.stats.results.units = 1;
     %     matlabbatch{4}.spm.stats.results.export{1}.pdf = true;
     
-    save([pn.root, 'B_data/D_batchFiles1stLevelGLM-', OUTDIR,'-tardis/',IDs{indID},'_SPM1stBatchGLM.mat'], 'matlabbatch');
+    save([pn.root, 'B_data/D_batchFiles1stLevelGLM-', OUTDIR, '/', IDs{indID},'_SPM1stBatchGLM.mat'], 'matlabbatch');
     
 end % subject loop
 
