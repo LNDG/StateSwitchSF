@@ -26,6 +26,9 @@ IDs = {'1117';'1118';'1120';'1124';'1125';'1126';'1131';'1132';'1135';'1136';...
 %Path to Base Dir of local output
 pn.root = '/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/G_GLM/';
 mkdir([pn.root, 'B_data/D_batchFiles1stLevelGLM-', OUTDIR,'-tardis/']);
+
+disp(['Creating files in ', [pn.root, 'B_data/D_batchFiles1stLevelGLM-', OUTDIR,'-tardis/']]);
+
 %addpath([pn.root, 'T_tools/spm12/']); % add spm functions
 
 for indID = 1:numel(IDs)
@@ -36,7 +39,7 @@ for indID = 1:numel(IDs)
     
     % specify general parameters
     
-    matlabbatch{1}.spm.stats.fmri_spec.dir = {['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/SPMfiles/SPM_' OUTDIR '/' IDs{indID} '/']};
+    matlabbatch{1}.spm.stats.fmri_spec.dir = {['/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/SPMfiles/SPM_' OUTDIR '/' IDs{indID} '/']};
     matlabbatch{1}.spm.stats.fmri_spec.timing.units = 'scans';
     matlabbatch{1}.spm.stats.fmri_spec.timing.RT = 0.645;
     matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t = 16;
@@ -51,23 +54,30 @@ for indID = 1:numel(IDs)
     
     % For the scans, we need to specify separate 3D images via comma seperator
     numOfRuns = 4;
+    
+    currvol=0;
     allFiles={};
-    if strcmp(IDs{indID}, '2132')
-        nscanlist=[1054;1040;1054;1054]; % do this for 2132 only
-        disp(['Change #volumes for run2']);
-        for indVol = 1:sum(nscanlist)
-            allFiles{indVol,1} = [basefile, ',', num2str(indVol)];
-        end
-    else
-        for indVol = 1:1054*numOfRuns
-            allFiles{indVol,1} = [basefile, ',', num2str(indVol)];
-        end
-    end
-    
-    matlabbatch{1}.spm.stats.fmri_spec.sess.scans = allFiles;
-    
     RegressorsAll=[];
+    
+    PMDimDur=[];
+    PMDimOnsets=[];
+    PM=[];
+    
     for indSession = 1:numOfRuns
+        
+        basefile = ['/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/Scans_ICBM/',IDs{indID},'/preproc/run-',num2str(indSession),'/',IDs{indID},'_run-',num2str(indSession),'_feat_detrended_bandpassed_FIX_2009c3mm.nii'];
+        if strcmp(IDs{indID}, '2132') && indSession == 2
+            disp(['Change #volumes for run2']);
+            for indVol = 1:1040
+                currvol=currvol+1;
+                allFiles{currvol,1} = [basefile, ',', num2str(indVol)];                
+            end
+        else
+            for indVol = 1:1054
+                currvol=currvol+1;
+                allFiles{currvol,1} = [basefile, ',', num2str(indVol)];
+            end
+        end       
         
         % get regressor data
         pn.regressors = '/Volumes/LNDG/Projects/StateSwitch/dynamic/data/mri/task/analyses/A_extractDesignTiming/B_data/A_regressors/';
@@ -90,14 +100,16 @@ for indID = 1:numel(IDs)
         
     end
     
+    % Add in scan information
+    matlabbatch{1}.spm.stats.fmri_spec.sess.scans = allFiles;
+    
     % stimulus viewing condition
-    indCond = 1;
     for indDim = 1:4
         
         DimOnsets = find(RegressorsAll(:,3) == 1 & RegressorsAll(:,4) == indDim);
         
         PMDimDur=cat(1,PMDimDur,repmat(4, numel(DimOnsets), 1));
-        PMDimOnsets=cat(1,PMDimOnsets,DimSessOnsets);
+        PMDimOnsets=cat(1,PMDimOnsets,DimOnsets);
         
         PM=cat(1,PM,repmat(indDim, numel(DimOnsets), 1));
         
@@ -134,9 +146,9 @@ for indID = 1:numel(IDs)
     
     %% add regressors
     
-    MotConfoundFile=['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_motionout_scol_all.txt'];
+    MotConfoundFile=['/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_motionout_scol_all.txt'];
     matlabbatch{1}.spm.stats.fmri_spec.sess.multi_reg={MotConfoundFile
-        ['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_motion_6dof_all.txt']};
+        ['/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_motion_6dof_all.txt']};
     
     
     %% add general session information
@@ -148,20 +160,20 @@ for indID = 1:numel(IDs)
     matlabbatch{1}.spm.stats.fmri_spec.volt = 1;
     matlabbatch{1}.spm.stats.fmri_spec.global = 'None';
     matlabbatch{1}.spm.stats.fmri_spec.mthresh = -Inf;
-    matlabbatch{1}.spm.stats.fmri_spec.mask = {'/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/Standards/mni_icbm152_gm_tal_nlin_sym_09c_thr025.nii'};
+    matlabbatch{1}.spm.stats.fmri_spec.mask = {'/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/Standards/mni_icbm152_gm_tal_nlin_sym_09c_thr025.nii'};
     matlabbatch{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
     
     %% concatenate sessions
     
-    matlabbatch{2}.cfg_basicio.run_ops.call_matlab.inputs{1}.anyfile = {['/home/mpib/perry/working/StateSwitch-Alistair/funct/SPM/SPMfiles/SPM_' OUTDIR '/' IDs{indID} '/' 'SPM.mat']};
+    matlabbatch{2}.cfg_basicio.run_ops.call_matlab.inputs{1}.anyfile = {['/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/SPMfiles/SPM_' OUTDIR '/' IDs{indID} '/' 'SPM.mat']};
     
     if strcmp(IDs{indID}, '2132')
         
-        matlabbatch{2}.cfg_basicio.run_ops.call_matlab.inputs{2}.string = '[1054 1040 1054 1054]';
+        matlabbatch{2}.cfg_basicio.run_ops.call_matlab.inputs{2}.evaluated = [1054 1040 1054 1054];
         
     else
         
-        matlabbatch{2}.cfg_basicio.run_ops.call_matlab.inputs{2}.string = '[1054 1054 1054 1054]';
+        matlabbatch{2}.cfg_basicio.run_ops.call_matlab.inputs{2}.evaluated = [1054 1054 1054 1054];
         
     end
     
@@ -176,7 +188,7 @@ for indID = 1:numel(IDs)
     
     
     %% Now contrasts: Simple Contrast Effects (for now)
-    matlabbatch{4}.spm.stats.con.spmmat(1) = cfg_dep('fMRI model estimation: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+    matlabbatch{4}.spm.stats.con.spmmat(1) = cfg_dep('fMRI Model Estimation: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
     
     matlabbatch{4}.spm.stats.con.consess{1}.tcon.name = 'Stimulus Condition';
     matlabbatch{4}.spm.stats.con.consess{1}.tcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
@@ -204,8 +216,8 @@ for indID = 1:numel(IDs)
         0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 1 0 0 0 0 0 0 0 0];
     
-    matlabbatch{4}.spm.stats.con.consess{5}.fcon.name = 'All effects F - w time derivs';
-    matlabbatch{4}.spm.stats.con.consess{5}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    matlabbatch{4}.spm.stats.con.consess{6}.fcon.name = 'All effects F - w time derivs';
+    matlabbatch{4}.spm.stats.con.consess{6}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
         0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
         0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
         0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
@@ -216,7 +228,7 @@ for indID = 1:numel(IDs)
     
     %% Brief subject results - PM
     
-    matlabbatch{5}.spm.stats.results.spmmat = cfg_dep('fMRI Results Report: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+    matlabbatch{5}.spm.stats.results.spmmat = cfg_dep('fMRI Contrast Manager: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
     matlabbatch{5}.spm.stats.results.conspec.titlestr = 'Load PM';
     matlabbatch{5}.spm.stats.results.conspec.contrasts = 2;
     matlabbatch{5}.spm.stats.results.conspec.threshdesc = 'none';

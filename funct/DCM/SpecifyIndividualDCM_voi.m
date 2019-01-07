@@ -4,7 +4,8 @@ function SpecifyIndividualDCM_voi(DATADIR, OUTBATCHDIR, sigclustcoords, sigclust
 % batching with tardis
 
 BASEDIR = '/Volumes/lndg/Projects/StateSwitch/dynamic/data/mri/task/analyses/9_Alistair/D_DCM/';
-mkdir([BASEDIR, 'A_Scripts/batchFilesDCMvoi-', OUTBATCHDIR,'-tardis/']);
+OUTDIR = [BASEDIR, 'A_Scripts/batchFilesDCMvoi-', OUTBATCHDIR,'-tardis'];
+mkdir(OUTDIR);
 
 % N = 44 YA + 53 OA;
 % AP remove 2131, 2237, 1215 (see oNe Note)
@@ -27,37 +28,36 @@ for i = 1:length(sigclustcoords)
     roicoords{i}=sigclustcoords(i,:);
 end
 
+disp(['Creating files in ', OUTDIR]);
+
 for indID = 1:numel(allIDs)
     
     disp(['Processing ', allIDs{indID}]);
     
-    for indSession = 1:4
-        
-        matlabbatch = cell(1);
-        
-        for iRoi = 1:nclusts
-            
-            matlabbatch{iRoi}.spm.util.voi.spmmat = {[DATADIR '/' allIDs{indID} '/SPM.mat']};
-            % adjust for effects of interest: Try second contrast for now..
-            matlabbatch{iRoi}.spm.util.voi.adjust = 4; %add in F contrast
-            matlabbatch{iRoi}.spm.util.voi.session = indSession;
-            matlabbatch{iRoi}.spm.util.voi.name = sigclustnames{iRoi};
-            matlabbatch{iRoi}.spm.util.voi.roi{1}.sphere.centre = roicoords{iRoi};
-            matlabbatch{iRoi}.spm.util.voi.roi{1}.sphere.radius = 6;
-            matlabbatch{iRoi}.spm.util.voi.roi{1}.sphere.move.fixed = 1;
-            
-            % add in threshold mask - circumvent spheres overlaying on
-            % WM
-            matlabbatch{iRoi}.spm.util.voi.roi{2}.mask.image = cellstr(fullfile(DATADIR, allIDs{indID},'mask.nii'));
-            matlabbatch{iRoi}.spm.util.voi.roi{2}.mask.threshold = 0.5;
-            
-            matlabbatch{iRoi}.spm.util.voi.expression = 'i1 & i2';
-            
-        end
-          
-            save([BASEDIR, 'A_Scripts/batchFilesDCMvoi-', OUTBATCHDIR,'-tardis/', allIDs{indID},'_run-', int2str(indSession),'_batchDCMvoi.mat'], 'matlabbatch');
-    end    
+    matlabbatch = cell(1);
     
-end % subject loop
+    for iRoi = 1:nclusts
+        
+        matlabbatch{iRoi}.spm.util.voi.spmmat = {[DATADIR '/' allIDs{indID} '/SPM.mat']};
+        % adjust for effects of interest: Try second contrast for now..
+        matlabbatch{iRoi}.spm.util.voi.adjust = 4; %add in F contrast
+        matlabbatch{iRoi}.spm.util.voi.session = 1;
+        matlabbatch{iRoi}.spm.util.voi.name = sigclustnames{iRoi};
+        matlabbatch{iRoi}.spm.util.voi.roi{1}.sphere.centre = roicoords{iRoi};
+        matlabbatch{iRoi}.spm.util.voi.roi{1}.sphere.radius = 6;
+        matlabbatch{iRoi}.spm.util.voi.roi{1}.sphere.move.fixed = 1;
+        
+        % add in threshold mask - circumvent spheres overlaying on
+        % WM
+        matlabbatch{iRoi}.spm.util.voi.roi{2}.mask.image = cellstr(fullfile(DATADIR, allIDs{indID},'mask.nii'));
+        matlabbatch{iRoi}.spm.util.voi.roi{2}.mask.threshold = 0.5;
+        
+        matlabbatch{iRoi}.spm.util.voi.expression = 'i1 & i2';
+        
+    end
+    
+    save([OUTDIR, '/', allIDs{indID}, '_batchDCMvoi.mat'], 'matlabbatch');
+    
+end %subject loop
 
 end % finish completely
