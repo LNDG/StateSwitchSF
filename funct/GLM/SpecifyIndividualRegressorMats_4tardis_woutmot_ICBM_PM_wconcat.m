@@ -148,7 +148,7 @@ for indID = 1:numel(IDs)
     
     MotConfoundFile=['/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_motionout_scol_all.txt'];
     matlabbatch{1}.spm.stats.fmri_spec.sess.multi_reg={MotConfoundFile
-        ['/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_motion_6dof_all.txt']};
+        ['/home/beegfs/perry/working/StateSwitch-Alistair/funct/SPM/MotionParameters/' IDs{indID} '/' IDs{indID} '_motion_24dof_all.txt']};
     
     
     %% add general session information
