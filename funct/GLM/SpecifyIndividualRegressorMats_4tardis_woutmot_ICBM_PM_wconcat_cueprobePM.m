@@ -1,4 +1,4 @@
-function SpecifyIndividualRegressorMats_4tardis_woutmot_ICBM_PM_wconcat(OUTDIR)
+function SpecifyIndividualRegressorMats_4tardis_woutmot_ICBM_PM_wconcat_cueprobePM(OUTDIR)
 
 % Create SPM experimental condition info for each subject for later
 % batching with tardis

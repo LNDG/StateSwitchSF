@@ -1,4 +1,4 @@
-function SpecifyIndividualRegressorMats_4tardis_woutmot_ICBM_PM_wconcat(OUTDIR)
+function SpecifyIndividualDM_4tardis_woutmot_ICBM_PM_wconcat_cueprobePM(OUTDIR)
 
 % Create SPM experimental condition info for each subject for later
 % batching with tardis
@@ -59,6 +59,8 @@ for indID = 1:numel(IDs)
     allFiles={};
     RegressorsAll=[];
     
+    CuePMDimDur=[];
+    CuePMDimOnsets=[];
     PMDimDur=[];
     PMDimOnsets=[];
     PM=[];
@@ -105,12 +107,10 @@ for indID = 1:numel(IDs)
     
     % stimulus viewing condition
     for indDim = 1:4
-        
-        DimOnsets = find(RegressorsAll(:,3) == 1 & RegressorsAll(:,4) == indDim);
-        
+                   
+        DimOnsets = find(RegressorsAll(:,3) == 1 & RegressorsAll(:,4) == indDim);        
         PMDimDur=cat(1,PMDimDur,repmat(4, numel(DimOnsets), 1));
-        PMDimOnsets=cat(1,PMDimOnsets,DimOnsets);
-        
+        PMDimOnsets=cat(1,PMDimOnsets,DimOnsets);        
         PM=cat(1,PM,repmat(indDim, numel(DimOnsets), 1));
         
     end
@@ -125,24 +125,27 @@ for indID = 1:numel(IDs)
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(1).orth = 1;
     
     
-    % add cue regressor
+    % add cue regressor and PM - no PM this time
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).name = 'CueOnset';
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).onset = find(RegressorsAll(:,2) == 1); % IMPORTANT: SPM starts counting at 0
     onsets = matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).onset;
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).duration = repmat(3, numel(onsets), 1); clear onsets; % duration of 1 (VarToolbox) vs 0 (SPM convention)
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).duration = repmat(2, numel(onsets), 1); clear onsets; % duration of 1 (VarToolbox) vs 0 (SPM convention)
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).tmod = 0;
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).pmod = struct('name', {}, 'param', {}, 'poly', {});
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(2).orth = 0;
     
     
-    % add probe regressor
+    % add probe regressor and PM
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).name = 'ProbeOnset';
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).onset = find(RegressorsAll(:,11) == 1); % IMPORTANT: SPM starts counting at 0
     onsets = matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).onset;
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).duration = repmat(2, numel(onsets), 1); clear onsets; % duration of 1 (VarToolbox) vs 0 (SPM convention)
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).duration = repmat(3, numel(onsets), 1); % duration of 1 (VarToolbox) vs 0 (SPM convention)
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).tmod = 0;
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).pmod = struct('name', {}, 'param', {}, 'poly', {});
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).pmod.name = 'RT';
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).pmod.param = RegressorsAll(onsets,13);
+    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).pmod.poly = 1;
     matlabbatch{1}.spm.stats.fmri_spec.sess.cond(3).orth = 0;
+    clear onsets;
     
     %% add regressors
     
@@ -210,21 +213,17 @@ for indID = 1:numel(IDs)
     
     %F-statistic - all effects, again for extracting time series
     
-    matlabbatch{4}.spm.stats.con.consess{5}.fcon.name = 'All effects F';
-    matlabbatch{4}.spm.stats.con.consess{5}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-        0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
-        0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
-        0 0 0 0 0 0 1 0 0 0 0 0 0 0 0];
-    
-    matlabbatch{4}.spm.stats.con.consess{6}.fcon.name = 'All effects F - w time derivs';
-    matlabbatch{4}.spm.stats.con.consess{6}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-        0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
-        0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
-        0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
-        0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
-        0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
-        0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
-        0 0 0 0 0 0 0 1 0 0 0 0 0 0 0];
+    matlabbatch{4}.spm.stats.con.consess{5}.fcon.name = 'All effects F - w time derivs';
+    matlabbatch{4}.spm.stats.con.consess{5}.fcon.weights = [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+        0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+        0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 
+        0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
+        0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+        0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0
+];
     
     %% Brief subject results - PM
     
