@@ -7,6 +7,11 @@ TEMPimage=$3
 TEMPimage_lowres=$4
 TEMPpre=$5
 
+#set ANTs resources
+
+ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=$ncpus
+export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS
+
 mkdir -p ${WORKDIR}/${subj}/preproc/nlregs
 
 cd ${WORKDIR}/${subj}/preproc/nlregs
@@ -16,7 +21,7 @@ cd ${WORKDIR}/${subj}/preproc/nlregs
 
 mrconvert ${WORKDIR}/${subj}/mri/t1/${subj}_t1_ANTs_brain.nii.gz ${subj}_t1_ANTs_brain_str.nii.gz -stride -1,2,3 -force -nthreads 1
 
-mrconvert ${WORKDIR}/${subj}/mri/t2/${subj}_t2_ANTs_brain.nii.gz ${subj}_t2_ANTs_brain_str.nii.gz -stride -1,2,3 -force -nthreads 1
+mrconvert ${WORKDIR}/${subj}/mri/t2/${subj}_T2w_ANTs_brain.nii.gz ${subj}_t2_ANTs_brain_str.nii.gz -stride -1,2,3 -force -nthreads 1
 
 
 #setup T2w to T1w registration using 6 DOF
@@ -71,7 +76,7 @@ fslsplit ${WORKDIR}/${subj}/preproc/run-${j}/${subj}_run-${j}_feat_detrended_ban
 for k in $(seq 0 1 $niters) 
 do
 
-antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i tmp`zeropad $k 4`.nii.gz -t ${WORKDIR}/${subj}/preproc/nlregs/run-${j}/${subj}_meanfunc_in_t2_to_t1.mat -t ${WORKDIR}/${subj}/preproc/nlregs/${subj}_t1_ANTs_in_${TEMPpre}.mat -o out`zeropad $k 4`.nii.gz
+antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i tmp`zeropad $k 4`.nii.gz -t ${WORKDIR}/${subj}/preproc/nlregs/run-${j}/${subj}_meanfunc_in_t2_to_t10GenericAffine.mat -t ${WORKDIR}/${subj}/preproc/nlregs/${subj}_t1_ANTs_in_${TEMPpre}0GenericAffine.mat -o out`zeropad $k 4`.nii.gz
 
 done
 
@@ -93,7 +98,7 @@ cd ${WORKDIR}/${subj}/preproc/nlregs/run-${j}/
 
 #sanity checking of functional normalization
 
-antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i example_func_masked.nii.gz -t ${subj}_meanfunc_in_t2_to_t1.mat -t ${WORKDIR}/${subj}/preproc/nlregs/${subj}_t1_ANTs_in_${TEMPpre}.mat -o ${subj}_example_func_in_${TEMPpre}.nii.gz
+antsApplyTransforms -d 3 -r ${TEMPimage_lowres} -i example_func_masked.nii.gz -t ${subj}_meanfunc_in_t2_to_t10GenericAffine.mat -t ${WORKDIR}/${subj}/preproc/nlregs/${subj}_t1_ANTs_in_${TEMPpre}0GenericAffine.mat -o ${subj}_example_func_in_${TEMPpre}.nii.gz
 
 
 #run finished, lets go back
