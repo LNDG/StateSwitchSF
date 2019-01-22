@@ -1,4 +1,4 @@
-function importconnectomes_basicanalysis_SP(parcnum, thr, sparsity, varargin)
+function importconnectomes_basicanalysis_SIFT(parcnum, thr, sparsity, varargin)
 %Import raw connectomes and basic network analyses
 %Using new functions available within latest MRtrix package
 %Copied from Alistair Perry, UNSW (2014)
@@ -28,7 +28,7 @@ function importconnectomes_basicanalysis_SP(parcnum, thr, sparsity, varargin)
 
 %% Batch Setup
 
-cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/DST
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/DST/SIFT
 
 % Find subject folders in the working directory
 workingdirectory = pwd;

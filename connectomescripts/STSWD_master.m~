@@ -128,17 +128,17 @@ bar_YAvOA('MAD',savewhere,'MAD_beehive','Mean anatomical distance per age group'
 addpath(genpath('~/Desktop/MATLAB/BrainNetViewer_20181219'))
 
 % create node file STR
-cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/DST
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/B_Data
 load('164COG.mat')
 
 sig_STR = find(ismember(local_anova.h_STR_group,1));
 for i = 1:length(sig_STR)
-    node_STR(i,[1:3]) = COG(sig_STR(i),[1:3]);
-    if local_anova.t_STR(sig_STR(i)) > 0
+    node_STR(i,:) = COG(i,:);
+    if local_anova.t_STR(i) > 0
         node_STR(i,4) = 1;
     else node_STR(i,4) = 2;
     end
-    node_STR(i,5) = 1;
+    node_STR(i,:) = 1;
 end
 
 

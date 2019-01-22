@@ -110,6 +110,21 @@ for i = 1:324
         ConTable_local.AgeGroup,ConTable_local.Sex); % ,{'verbose'}
 end
 
+%% t-tests
+
+ttest_local = struct();
+
+for i = 1:324
+    [ttest_local(i,:).h,ttest_local(i,:).p,ttest_local(i,:).ci,...
+        ttest_local(i,:).stats] = ttest2(ConTable_local{find(ismember(ConTable_local.AgeGroup,1)),i+4},...
+        ConTable_local{find(ismember(ConTable_local.AgeGroup,2)),i+4}); 
+end
+
+for i = 1:162
+    t_STR(i,:) = (ttest_local(i).stats.tstat);
+    t_DEG(i,:) = (ttest_local(i+162).stats.tstat)
+end
+
 %% correction for multiple comparisons
 addpath(genpath('~/Desktop/MATLAB/fdr_bh'))
 
@@ -138,7 +153,7 @@ end
 % end
 
 %% create summary table
-cd ~/../../Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/B_Data
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/B_Data
 
 fileID = fopen('roi_labels.txt');
 roi_labels = textscan(fileID,'%s');
@@ -156,10 +171,12 @@ for i = 1:162
     local_anova(i,9) = array2table(groupcomp_local(i+162).FANCOVAN(1));
 end
 local_anova(:,[10 11]) = array2table(DEG_adj_p);
+local_anova(:,12) = table(t_STR);
+local_anova(:,13) = table(t_DEG);
 
 local_anova.Properties.VariableNames = {'measure','h_STR_group','h_STR_sex',...
     'F_STR','p_STR_group','p_STR_sex','h_DEG_group','h_DEG_sex','F_DEG',...
-    'p_DEG_group','p_DEG_sex'};
+    'p_DEG_group','p_DEG_sex','t_STR','t_DEG'}; 
 
 %% clear
 
