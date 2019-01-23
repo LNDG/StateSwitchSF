@@ -89,6 +89,14 @@ fslmerge -t ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3m
 rm *out*
 
 
+#Appears file type will default to reference temp (leading to massive file sizes..)
+
+mrconvert ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii.gz ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm_32f.nii.gz -datatype float32 -force
+
+mv ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm_32f.nii.gz ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii.gz
+
+
+
 gunzip ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii.gz
 
 mv ${subj}_run-${j}_feat_detrended_bandpassed_FIX_t2nlreg_${TEMPpre}_3mm.nii ${WORKDIR}/${subj}/preproc/run-${j}/
