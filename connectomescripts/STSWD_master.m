@@ -26,8 +26,8 @@ cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sar
 % yes thresholding, set thr = 1
 % no thresholding, set thr = 0
 % first run: sparsity = 10
-% can leave varargin at default
-importconnectomes_basicanalysis_SIFT(164, 0, 10) 
+% can leave varargin at default - set to 'ORGinv' for noSIFT
+importconnectomes_basicanalysis_noSIFT(164, 0, 10,'ORGinv') 
 
 %% import demographic data
 %change to demographics directory
@@ -50,7 +50,7 @@ demogr_short(ismember(demogr_short.ID_demogr,[1213,1215,1221,1227,2128,1126,...
 %change back to scripts directory
 cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/G_Git/githubrepos/StateSwitchSF/connectomescripts
 
-[ConTable,ConTable_local, subjs] = extracttopologyinfo_SIFT('ID_list.txt', 10);
+[ConTable,ConTable_local, subjs] = extracttopologyinfo_noSIFT('ID_list.txt', 10);
 
 % delete pilots' DWI info 
 for i = [2142 2253 2254 2255]
@@ -128,12 +128,13 @@ bar_YAvOA('MAD',savewhere,'MAD_beehive','Mean anatomical distance per age group'
 addpath(genpath('~/Desktop/MATLAB/BrainNetViewer_20181219'))
 
 % create node file STR
-cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/DST
+cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes
 load('164COG.mat')
+no_cereb_nodes = COG([1:74 76:163],:);
 
 sig_STR = find(ismember(local_anova.h_STR_group,1));
 for i = 1:length(sig_STR)
-    node_STR(i,[1:3]) = COG(sig_STR(i),[1:3]);
+    node_STR(i,[1:3]) = no_cereb_nodes(sig_STR(i),[1:3]);
     if local_anova.t_STR(sig_STR(i)) > 0
         node_STR(i,4) = 1;
     else node_STR(i,4) = 2;
@@ -141,4 +142,12 @@ for i = 1:length(sig_STR)
     node_STR(i,5) = 1;
 end
 
-
+sig_DEG = find(ismember(local_anova.h_DEG_group,1));
+for i = 1:length(sig_DEG)
+    node_DEG(i,[1:3]) = no_cereb_nodes(sig_DEG(i),[1:3]);
+    if local_anova.t_DEG(sig_DEG(i)) > 0
+        node_DEG(i,4) = 1;
+    else node_DEG(i,4) = 2;
+    end
+    node_DEG(i,5) = 1;
+end
