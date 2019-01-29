@@ -27,7 +27,12 @@ cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sar
 % no thresholding, set thr = 0
 % first run: sparsity = 10
 % can leave varargin at default - set to 'ORGinv' for noSIFT
-importconnectomes_basicanalysis_noSIFT(164, 0, 10,'ORGinv') 
+% change path per parcellation
+
+SIFTpath = '/Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/DST/SIFT'
+noSIFTpath = '/Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/DST/noSIFT'
+
+importconnectomes_basicanalysis_SP(SIFTpath, 164, 0, 10) 
 
 %% import demographic data
 %change to demographics directory
@@ -50,7 +55,7 @@ demogr_short(ismember(demogr_short.ID_demogr,[1213,1215,1221,1227,2128,1126,...
 %change back to scripts directory
 cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/analyses/Sarah/G_Git/githubrepos/StateSwitchSF/connectomescripts
 
-[ConTable,ConTable_local, subjs] = extracttopologyinfo_noSIFT('ID_list.txt', 10);
+[ConTable,ConTable_local, subjs] = extracttopologyinfo_SP(SIFTpath, 'ID_list.txt', 10);
 
 % delete pilots' DWI info 
 for i = [2142 2253 2254 2255]
@@ -72,6 +77,8 @@ ConTable_local.STR75 = [];
 ConTable_local.STR164 = [];
 ConTable_local.DEG75 = [];
 ConTable_local.DEG164 = [];
+ConTable_local.STRnt75 = [];
+ConTable_local.STRnt164 = [];
 
 cd /Volumes/LNDG/Projects/StateSwitch-Alistair/dynamic/data/mri/dwi/preproc/B_data/connectomes/DST
 
@@ -150,4 +157,14 @@ for i = 1:length(sig_DEG)
     else node_DEG(i,4) = 2;
     end
     node_DEG(i,5) = 1;
+end
+
+sig_STRnt = find(ismember(local_anova.h_STRnt_group,1));
+for i = 1:length(sig_STRnt)
+    node_STRnt(i,[1:3]) = no_cereb_nodes(sig_STRnt(i),[1:3]);
+    if local_anova.t_STRnt(sig_STRnt(i)) > 0
+        node_STRnt(i,4) = 1;
+    else node_STRnt(i,4) = 2;
+    end
+    node_STRnt(i,5) = 1;
 end

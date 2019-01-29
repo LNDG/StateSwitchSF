@@ -103,7 +103,7 @@ addpath(genpath('~/Desktop/MATLAB/mancovan_496'))
 
 groupcomp_local = struct();
 
-for i = 1:324
+for i = 1:486
     [groupcomp_local(i,:).T,groupcomp_local(i,:).p,...
         groupcomp_local(i,:).FANCOVAN,groupcomp_local(i,:).pANCOVAN,...
         groupcomp_local(i,:).stats] = mancovan(ConTable_local{:,i+4},...
@@ -114,7 +114,7 @@ end
 
 ttest_local = struct();
 
-for i = 1:324
+for i = 1:486
     [ttest_local(i,:).h,ttest_local(i,:).p,ttest_local(i,:).ci,...
         ttest_local(i,:).stats] = ttest2(ConTable_local{find(ismember(ConTable_local.AgeGroup,1)),i+4},...
         ConTable_local{find(ismember(ConTable_local.AgeGroup,2)),i+4}); 
@@ -122,19 +122,21 @@ end
 
 for i = 1:162
     t_STR(i,:) = (ttest_local(i).stats.tstat);
-    t_DEG(i,:) = (ttest_local(i+162).stats.tstat)
+    t_DEG(i,:) = (ttest_local(i+162).stats.tstat);
+    t_STRnt(i,:) = (ttest_local(i+324).stats.tstat);
 end
 
 %% correction for multiple comparisons
 addpath(genpath('~/Desktop/MATLAB/fdr_bh'))
 
-for i = 1:324
+for i = 1:486
     local_p(i,[1:2]) = (groupcomp_local(i).p);
 end
 
 
 [STR_h, crit_p, adj_ci_cvrg, STR_adj_p] = fdr_bh(local_p([1:162],:),0.05);
-[DEG_h, crit_p, adj_ci_cvrg, DEG_adj_p] = fdr_bh(local_p([163:end],:),0.05);
+[DEG_h, crit_p, adj_ci_cvrg, DEG_adj_p] = fdr_bh(local_p([163:324],:),0.05);
+[STRnt_h, crit_p, adj_ci_cvrg, STRnt_adj_p] = fdr_bh(local_p([325:end],:),0.05);
 
 % for i = 1:length(STR_adj_p)
 %     for j = 1:2
@@ -173,10 +175,17 @@ end
 local_anova(:,[10 11]) = array2table(DEG_adj_p);
 local_anova(:,12) = table(t_STR);
 local_anova(:,13) = table(t_DEG);
+local_anova(:,[14 15]) = array2table(STRnt_h);
+for i = 1:162
+    local_anova(i,16) = array2table(groupcomp_local(i+324).FANCOVAN(1));
+end
+local_anova(:,[17 18]) = array2table(STRnt_adj_p);
+local_anova(:,19) = table(t_STRnt);
 
 local_anova.Properties.VariableNames = {'measure','h_STR_group','h_STR_sex',...
     'F_STR','p_STR_group','p_STR_sex','h_DEG_group','h_DEG_sex','F_DEG',...
-    'p_DEG_group','p_DEG_sex','t_STR','t_DEG'}; 
+    'p_DEG_group','p_DEG_sex','t_STR','t_DEG','h_STRnt_group','h_STRnt_sex',...
+    'F_STRnt','p_STRnt_group','p_STRnt_sex','t_STRnt'}; 
 
 %% clear
 
